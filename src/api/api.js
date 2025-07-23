@@ -8,4 +8,3 @@ export const fetchAllPlaces = async () => {
 };
 
 export const IMAGE_BASE_URL = baseURL;
-export const getImageUrl = (src) => `${baseURL}/${src}`;

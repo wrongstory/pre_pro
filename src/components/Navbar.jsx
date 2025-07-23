@@ -13,13 +13,13 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b shadow-sm mb-6">
       <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-blue-600">맛집 목록</h1>
+        <h1 className="text-xl font-bold text-blue-600">맛찝</h1>
         <div className="flex gap-3">
           <Link to="/" className={linkStyle("/")}>
-            홈
+            뭐 먹지?
           </Link>
           <Link to="/wishlist" className={linkStyle("/wishlist")}>
-            찜 목록
+            너의 맛집은...
           </Link>
         </div>
       </div>

@@ -1,4 +1,4 @@
-export default function PlaceCard({ place, onToggleWish }) {
+export default function PlaceCard({ place /*onToggleWish*/ }) {
   return (
     <div className="bg-white shadow-md rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg transition duration-200">
       <img

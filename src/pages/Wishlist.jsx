@@ -21,7 +21,7 @@ export default function Wishlist() {
 
   return (
     <div>
-      <h1>찜한 맛집</h1>
+      <h1>너의 맛집은....</h1>
       {wishlist.map((place) => (
         <PlaceCard
           key={place.id}

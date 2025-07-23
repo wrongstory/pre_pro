@@ -4,12 +4,14 @@ import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
 import useUserLocation from "../hooks/useUserLocation";
 import { sortPlacesByDistance } from "../hooks/loc";
+import useAddressFromLocation from "../hooks/useAddressFromLocation";
 
 export default function Home() {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { location: userLocation, locationError } = useUserLocation();
+  const address = useAddressFromLocation(userLocation);
 
   useEffect(() => {
     if (!userLocation) return;
@@ -64,6 +66,7 @@ export default function Home() {
             {userLocation.lon.toFixed(4)}
           </p>
         )}
+        {address && <p> 현재 지역: {address}</p>}
       </div>
       <h1 className="text-3xl font-bold mb-6 text-center">
         🍜 너가 알 수도 있는 맛집

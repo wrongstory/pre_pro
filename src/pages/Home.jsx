@@ -3,6 +3,7 @@ import { fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
 import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
 import useUserLocation from "../hooks/useUserLocation";
+import { sortPlacesByDistance } from "../hooks/loc";
 
 export default function Home() {
   const [places, setPlaces] = useState([]);
@@ -22,7 +23,14 @@ export default function Home() {
           imageUrl: `${IMAGE_BASE_URL}/${place.image.src}`,
         }));
 
-        setPlaces(withImages);
+        // 거리 순 정렬
+        const sorted = sortPlacesByDistance(
+          withImages,
+          userLocation.lat,
+          userLocation.lon
+        );
+
+        setPlaces(sorted);
       } catch (err) {
         console.error(err);
 

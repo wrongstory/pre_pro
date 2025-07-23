@@ -11,6 +11,11 @@ export default function PlaceCard({ place /*onToggleWish*/ }) {
           {place.title}
         </h2>
         <p className="text-sm text-gray-600">{place.description}</p>
+        {place.distance && (
+          <p className="text-right text-sm text-blue-500">
+            📏 거리: {place.distance.toFixed(2)} km
+          </p>
+        )}
       </div>
     </div>
   );

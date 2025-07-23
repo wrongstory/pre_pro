@@ -2,13 +2,20 @@ import { useEffect, useState } from "react";
 import { fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
 import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
+import useUserLocation from "../hooks/useUserLocation";
+import { sortPlacesByDistance } from "../hooks/loc";
+import useAddressFromLocation from "../hooks/useAddressFromLocation";
 
 export default function Home() {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { location: userLocation, locationError } = useUserLocation();
+  const address = useAddressFromLocation(userLocation);
 
   useEffect(() => {
+    if (!userLocation) return;
+
     async function loadPlaces() {
       try {
         const placesData = await fetchAllPlaces();
@@ -18,7 +25,14 @@ export default function Home() {
           imageUrl: `${IMAGE_BASE_URL}/${place.image.src}`,
         }));
 
-        setPlaces(withImages);
+        // 거리 순 정렬
+        const sorted = sortPlacesByDistance(
+          withImages,
+          userLocation.lat,
+          userLocation.lon
+        );
+
+        setPlaces(sorted);
       } catch (err) {
         console.error(err);
 
@@ -37,14 +51,31 @@ export default function Home() {
       }
     }
     loadPlaces();
-  }, []);
+  }, [userLocation]);
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-8">
+    <main className="max-w-4xl mx-auto px-4 py-2">
+      <div className="text-right text-sm text-gray-500 mb-6">
+        {locationError && <p className="text-red-500">{locationError}</p>}
+        {!locationError && !userLocation && (
+          <p>위치 정보를 불러오는 중입니다...</p>
+        )}
+        {userLocation && (
+          <p>
+            📍 현재 위치: {userLocation.lat.toFixed(4)},{" "}
+            {userLocation.lon.toFixed(4)}
+          </p>
+        )}
+        {address && <p> 현재 지역: {address}</p>}
+      </div>
       <h1 className="text-3xl font-bold mb-6 text-center">
         🍜 너가 알 수도 있는 맛집
       </h1>
-
+      {(error || locationError) && (
+        <p className="text-center text-red-500 mt-2">
+          {locationError || error}
+        </p>
+      )}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {loading ? (

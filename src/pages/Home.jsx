@@ -21,12 +21,21 @@ export default function Home() {
         setPlaces(withImages);
       } catch (err) {
         console.error(err);
-        setError("맛집 정보를 불러오는 데 실패했습니다.");
+
+        // 상태 코드(http) 에 따라 분기. axios는 무응답의 경우 res가 undefined 일 수 있음.
+        const status = err.response?.status;
+
+        if (status === 404) {
+          setError("요청 데이터를 찾을 수 없습니다. 404");
+        } else if (status === 500) {
+          setError("서버에 문제가 발생했습니다. 500");
+        } else {
+          setError("맛집 정보를 불러오는 데 실패했습니다.");
+        }
       } finally {
         setLoading(false);
       }
     }
-
     loadPlaces();
   }, []);
 

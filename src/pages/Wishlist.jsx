@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
-import { fetchWishlistedPlaces, removeFromWishlist } from "../api/api";
+import {
+  fetchWishlistedPlaces,
+  IMAGE_BASE_URL,
+  removeFromWishlist,
+} from "../api/api";
 import PlaceCard from "../components/PlaceCard";
+import PlaceSkeleton from "../components/PlaceSkeleton";
 
 export default function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
@@ -10,18 +15,24 @@ export default function Wishlist() {
   const loadWishlist = async () => {
     try {
       const res = await fetchWishlistedPlaces();
-      setWishlist(res);
+
+      const withImageUrl = res.map((place) => ({
+        ...place,
+        imageUrl: `${IMAGE_BASE_URL}/${place.image.src}`,
+        isWishlisted: true,
+      }));
+
+      setWishlist(withImageUrl);
     } catch (err) {
       console.error(err);
       setError("찜한 맛집을 못 불러옴");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    async () => {
-      await loadWishlist();
-      setLoading(false);
-    };
+    loadWishlist();
   }, []);
 
   const handleRemove = async (id) => {
@@ -36,15 +47,17 @@ export default function Wishlist() {
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {loading ? (
-        <p className="text-center text-gray-500">불러오는 중...</p>
-      ) : wishlist.length === 0 ? (
-        <p className="text-center text-gray-400">찜한 맛집이 없습니다.</p>
+        <div className="flex flex-col items-center justify-center min-h-[300px]">
+          <div className="w-[90%] sm:w-[300px]">
+            <PlaceSkeleton />
+          </div>
+        </div>
       ) : (
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {wishlist.map((place) => (
             <PlaceCard
               key={place.id}
-              place={{ ...place, isWishlisted: true }}
+              place={place}
               onToggleWish={handleRemove}
             />
           ))}

@@ -13,6 +13,14 @@ export default function Home() {
   const { location: userLocation, locationError } = useUserLocation();
   const address = useAddressFromLocation(userLocation);
 
+  const handleToggleWish = (placeId, isWishlisted) => {
+    setPlaces((prevPlaces) =>
+      prevPlaces.map((place) =>
+        place.id === placeId ? { ...place, isWishlisted } : place
+      )
+    );
+  };
+
   useEffect(() => {
     if (!userLocation) return;
 
@@ -87,7 +95,11 @@ export default function Home() {
       ) : (
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {places.map((place) => (
-            <PlaceCard key={place.id} place={place} />
+            <PlaceCard
+              key={place.id}
+              place={place}
+              onToggleWish={handleToggleWish}
+            />
           ))}
         </section>
       )}

@@ -14,14 +14,20 @@ export default function Home() {
   const address = useAddressFromLocation(userLocation);
 
   const handleToggleWish = (placeId, isWishlisted) => {
+    const selectedPlace = places.find((p) => p.id === placeId);
+
+    if (!selectedPlace) {
+      console.error("place 못찾음", placeId);
+      return;
+    }
+    const updatedPlace = { ...selectedPlace, isWishlisted };
+
     setPlaces((prevPlaces) =>
-      prevPlaces.map((place) =>
-        place.id === placeId ? { ...place, isWishlisted } : place
-      )
+      prevPlaces.map((place) => (place.id === placeId ? updatedPlace : place))
     );
 
     // 서버에 POST 요청 (찜 추가)
-    addToWishlist(placeId)
+    addToWishlist(updatedPlace)
       .then(() => {
         console.log("찜 성공");
       })

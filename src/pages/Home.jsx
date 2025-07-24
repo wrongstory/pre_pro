@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { addToWishlist, fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
+import {
+  addToWishlist,
+  fetchAllPlaces,
+  fetchWishlistedPlaces,
+  IMAGE_BASE_URL,
+} from "../api/api";
 import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
 import useUserLocation from "../hooks/useUserLocation";
@@ -41,11 +46,15 @@ export default function Home() {
 
     async function loadPlaces() {
       try {
-        const placesData = await fetchAllPlaces();
+        const placesData = await fetchAllPlaces(); // 전체 맛집
+        const wishlistData = await fetchWishlistedPlaces(); // 찜한 맛집
+        console.log(wishlistData);
+        const wishIds = wishlistData.map((p) => p.id); // 찜된 ID 리스트
 
         const withImages = placesData.map((place) => ({
           ...place,
           imageUrl: `${IMAGE_BASE_URL}/${place.image.src}`,
+          isWishlisted: wishIds.includes(place.id), // 찜 여부 추가
         }));
 
         // 거리 순 정렬

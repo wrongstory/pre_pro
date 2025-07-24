@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
+import { addToWishlist, fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
 import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
 import useUserLocation from "../hooks/useUserLocation";
@@ -19,6 +19,15 @@ export default function Home() {
         place.id === placeId ? { ...place, isWishlisted } : place
       )
     );
+
+    // 서버에 POST 요청 (찜 추가)
+    addToWishlist(placeId)
+      .then(() => {
+        console.log("찜 성공");
+      })
+      .catch((err) => {
+        console.error("실패", err);
+      });
   };
 
   useEffect(() => {

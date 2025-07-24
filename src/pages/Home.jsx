@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchAllPlaces, IMAGE_BASE_URL } from "../api/api";
+import {
+  addToWishlist,
+  fetchAllPlaces,
+  fetchWishlistedPlaces,
+  IMAGE_BASE_URL,
+} from "../api/api";
 import PlaceCard from "../components/PlaceCard";
 import PlaceSkeleton from "../components/PlaceSkeleton";
 import useUserLocation from "../hooks/useUserLocation";
@@ -13,16 +18,43 @@ export default function Home() {
   const { location: userLocation, locationError } = useUserLocation();
   const address = useAddressFromLocation(userLocation);
 
+  const handleToggleWish = (placeId, isWishlisted) => {
+    const selectedPlace = places.find((p) => p.id === placeId);
+
+    if (!selectedPlace) {
+      console.error("place 못찾음", placeId);
+      return;
+    }
+    const updatedPlace = { ...selectedPlace, isWishlisted };
+
+    setPlaces((prevPlaces) =>
+      prevPlaces.map((place) => (place.id === placeId ? updatedPlace : place))
+    );
+
+    // 서버에 POST 요청 (찜 추가)
+    addToWishlist(updatedPlace)
+      .then(() => {
+        console.log("찜 성공");
+      })
+      .catch((err) => {
+        console.error("실패", err);
+      });
+  };
+
   useEffect(() => {
     if (!userLocation) return;
 
     async function loadPlaces() {
       try {
-        const placesData = await fetchAllPlaces();
+        const placesData = await fetchAllPlaces(); // 전체 맛집
+        const wishlistData = await fetchWishlistedPlaces(); // 찜한 맛집
+        console.log(wishlistData);
+        const wishIds = wishlistData.map((p) => p.id); // 찜된 ID 리스트
 
         const withImages = placesData.map((place) => ({
           ...place,
           imageUrl: `${IMAGE_BASE_URL}/${place.image.src}`,
+          isWishlisted: wishIds.includes(place.id), // 찜 여부 추가
         }));
 
         // 거리 순 정렬
@@ -87,7 +119,11 @@ export default function Home() {
       ) : (
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {places.map((place) => (
-            <PlaceCard key={place.id} place={place} />
+            <PlaceCard
+              key={place.id}
+              place={place}
+              onToggleWish={handleToggleWish}
+            />
           ))}
         </section>
       )}

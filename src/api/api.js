@@ -8,7 +8,7 @@ export const fetchAllPlaces = async () => {
 };
 
 export const addToWishlist = async (placeId) => {
-  const res = await axios.post(`${baseURL}/user/places`, {
+  const res = await axios.post(`${baseURL}/users/places`, {
     placeId,
   });
   return res.data;

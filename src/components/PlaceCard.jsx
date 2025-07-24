@@ -1,9 +1,16 @@
 import { useState } from "react";
+import ConfirmModal from "./ConfirmModal";
 
 export default function PlaceCard({ place, onToggleWish }) {
   const [isWishlisted, setIsWishlisted] = useState(place.isWishlisted || false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleWishToggle = () => {
+    if (isWishlisted) setShowModal(true);
+    else toggleWish();
+  };
+
+  const toggleWish = () => {
     setIsWishlisted(!isWishlisted);
     onToggleWish(place.id, !isWishlisted);
   };
@@ -28,6 +35,7 @@ export default function PlaceCard({ place, onToggleWish }) {
             {isWishlisted ? "❤️" : "🤍"}
           </button>
         </div>
+
         <p className="text-sm text-gray-600">{place.description}</p>
         {place.distance && (
           <p className="text-right text-sm text-blue-500">
@@ -35,6 +43,16 @@ export default function PlaceCard({ place, onToggleWish }) {
           </p>
         )}
       </div>
+      {showModal && (
+        <ConfirmModal
+          message="최애맛집 탈락??? ㅠㅜ"
+          onConfirm={() => {
+            toggleWish();
+            setShowModal(false);
+          }}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }
